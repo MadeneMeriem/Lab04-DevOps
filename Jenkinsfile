@@ -1,23 +1,10 @@
 pipeline {
     agent any
-
     environment {
-        REPO_URL   = 'https://github.com/MadeneMeriem/Lab04-DevOps.git'
-        BRANCH     = 'master'
         IMAGE_NAME = 'book-app'
         EXT_PORT   = '3000'
     }
-
     stages {
-
-        stage('Clone') {
-            steps {
-                echo 'Cloning the repository...'
-                sh 'rm -rf ./* ./.git || true'
-                sh "git clone -b ${BRANCH} ${REPO_URL} ."
-            }
-        }
-
         stage('Build') {
             agent {
                 docker {
@@ -31,7 +18,6 @@ pipeline {
                 sh 'npm install'
             }
         }
-
         stage('Test') {
             agent {
                 docker {
@@ -53,20 +39,17 @@ pipeline {
                 }
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
-
         stage('Approval') {
             steps {
                 input message: 'Deploy to production? Approve or Abort.', ok: 'Approve'
             }
         }
-
         stage('Deploy') {
             steps {
                 echo 'Cleaning old container...'
@@ -77,9 +60,7 @@ pipeline {
                 echo "App is running at http://localhost:${EXT_PORT}"
             }
         }
-
     }
-
     post {
         always {
             echo 'Pipeline finished!'
