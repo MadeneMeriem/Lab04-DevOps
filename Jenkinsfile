@@ -45,11 +45,6 @@ pipeline {
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
-        stage('Approval') {
-            steps {
-                input message: 'Deploy to production? Approve or Abort.', ok: 'Approve'
-            }
-        }
         stage('Deploy') {
             steps {
                 echo 'Cleaning old container...'
